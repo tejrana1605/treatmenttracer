@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: configserver:http://localhost:8888
+debug: false
+jwt:
+  secret: ad647a034acbf86bf9b6c4095e3f56633058224ce164b8fe42fc05b837197f70
+  expiration: 360000
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /auth/v3/api-docs
+      - name: user-profile-service
+        url: /users/v3/api-docs
+      - name: order-service
+        url: /orders/v3/api-docs
+      - name: inventory-service
+        url: /inventory/v3/api-docs
+      - name: treatment-service
+        url: /treatment/v3/api-docs
