@@ -19,10 +19,10 @@ public class InternalCredentialsController {
         this.service = service;
     }
 
-    @PostMapping
+    /*@PostMapping
     public void createCredentials(@RequestBody CreateCredentialsRequest request) {
         service.createCredential(request);
-    }
+    }*/
 
     @PostMapping("/update")
     public void updateCredentials(@RequestBody CreateCredentialsRequest request) {

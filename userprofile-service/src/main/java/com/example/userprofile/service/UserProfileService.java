@@ -4,11 +4,13 @@ import com.example.userprofile.clients.AuthInternalClient;
 import com.example.userprofile.dto.CreateCredentialRequest;
 import com.example.userprofile.dto.CreateUserProfileRequest;
 import com.example.userprofile.dto.UserProfileResponse;
+import com.example.userprofile.event.UserRegisteredEvent;
 import com.example.userprofile.exceptions.ResourceNotFoundException;
 import com.example.userprofile.model.UserProfile;
 import com.example.userprofile.model.UserRole;
 import com.example.userprofile.repository.UserProfileRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,9 +20,16 @@ public class UserProfileService {
     private final UserProfileRepository repository;
     private final AuthInternalClient authClient;
 
-    public UserProfileService(UserProfileRepository repository, AuthInternalClient authClient) {
+    private final MessagePublisher messagePublisher;
+
+    @Value("${kafka.topic.name}")
+    private String topic;
+
+
+    public UserProfileService(UserProfileRepository repository, AuthInternalClient authClient,MessagePublisher messagePublisher) {
         this.repository = repository;
         this.authClient = authClient;
+        this.messagePublisher=messagePublisher;
     }
 
     public UserProfileResponse create(CreateUserProfileRequest request) {
@@ -35,9 +44,12 @@ public class UserProfileService {
 
         // create credentials
         try {
-            authClient.createCredentials(new CreateCredentialRequest(
+            messagePublisher.publish(topic, new UserRegisteredEvent(
+                    request.username(), request.password()));
+
+            /*authClient.createCredentials(new CreateCredentialRequest(
                    null, request.username(), request.password()
-            ));
+            ));*/
         }catch (Exception exception) {
             // trigger a rollback
             throw new RuntimeException(exception);

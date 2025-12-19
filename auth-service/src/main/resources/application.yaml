@@ -1,8 +1,23 @@
+kafka:
+  topic:
+    name: user-registration-events
 spring:
   config:
     import: configserver:http://localhost:8888
   application:
     name: auth-service
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: auth-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: false
+      properties:
+        spring.json.type.mapping: >
+          com.example.userprofile.event.UserRegisteredEvent:
+          com.example.authservice.event.UserRegisteredEvent
 user-profile:
   url: http://localhost:8083
 server:

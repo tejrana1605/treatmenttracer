@@ -1,6 +1,7 @@
 package com.example.authservice.service;
 
 import com.example.authservice.dto.request.CreateCredentialsRequest;
+import com.example.authservice.event.UserRegisteredEvent;
 import com.example.authservice.model.Credential;
 import com.example.authservice.repository.CredentialRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,15 @@ public class InternalCredentialsService {
     }
 
 
-    public void createCredential(CreateCredentialsRequest request) {
+    public void createCredential(UserRegisteredEvent request) {
+        Credential credential = new Credential(
+                request.username(),
+                passwordEncoder.encode(request.password())
+        );
+        repository.save(credential);
+    }
+
+    /*public void createCredential(CreateCredentialsRequest request) {
         boolean isPresent = repository.findByUsername(request.username()).isPresent();
         if (isPresent) {
             throw new IllegalStateException("Username is already in use");
@@ -30,7 +39,7 @@ public class InternalCredentialsService {
                 passwordEncoder.encode(request.rawPassword())
         );
         repository.save(credential);
-    }
+    }*/
 
     public void updateCredential(CreateCredentialsRequest request) {
         boolean isPresent = repository.findById(request.id()).isPresent();
